@@ -9,21 +9,11 @@ parser.add_argument("-r", "--return-registers", action="store_true", help="Retur
 parser.add_argument("registers", nargs="*", type=int, default=[0])
 
 def zero(n, regs=[], ln=0):
-    if n > len(regs):
-        regs.append(0)
-    elif n > 0: # indexing starts at 1
-        regs[n - 1] = 0
-    else:
-        raise Exception("Indexing error")
+    regs[n - 1] = 0
     return regs, ln + 1
 
 def successor(n, regs=[], ln=0):
-    if n > len(regs):
-        regs.append(1)
-    elif n > 0: # indexing starts at 1
-        regs[n - 1] += 1
-    else:
-        raise Exception("Indexing error")
+    regs[n - 1] += 1
     return regs, ln + 1
 
 def transfer(m, n, regs=[], ln=0):
@@ -40,6 +30,9 @@ def parse_op_arg(arg):
     if arg == "_":
         return float('inf')
     else:
+        n = int(arg)
+        if n < 0:
+            raise Exception("Arguments must be non-negative integers.")
         return int(arg)
 
 operations = {
@@ -62,6 +55,13 @@ if __name__ == "__main__":
     while True:
         instr = lines[ln].split()
         op, op_args = instr[0], map(parse_op_arg, instr[1:])
+        
+        # ensure that each referenced register exists
+        for _arg in op_args:
+            if type(_arg) is int:
+                while len(regs) < _arg:
+                    regs.append(0)
+        
         regs, next_ln =  operations[op](*op_args, regs=regs, ln=ln)
         if args.verbose and not args.quiet:
             print "Line {}: {}\nRegisters: {}\nNext: {}".format(ln + 1, lines[ln], regs, next_ln + 1)
