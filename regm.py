@@ -27,7 +27,7 @@ def successor(n, regs=[], ln=0):
     return regs, ln + 1
 
 def transfer(m, n, regs=[], ln=0):
-    regs[m] = n
+    regs[n - 1] = regs[m - 1]
     return regs, ln + 1
 
 def jump(m, n, q, regs=[], ln=0):
