@@ -36,6 +36,12 @@ def jump(m, n, q, regs=[], ln=0):
     else:
         return regs, ln + 1
 
+def parse_op_arg(arg):
+    if arg == "_":
+        return float('inf')
+    else:
+        return int(arg)
+
 operations = {
     "Z": zero,
     "S": successor,
@@ -55,7 +61,7 @@ if __name__ == "__main__":
     ln = 0
     while True:
         instr = lines[ln].split()
-        op, op_args = instr[0], map(int, instr[1:])
+        op, op_args = instr[0], map(parse_op_arg, instr[1:])
         regs, next_ln =  operations[op](*op_args, regs=regs, ln=ln)
         if args.verbose and not args.quiet:
             print "Line {}: {}\nRegisters: {}\nNext: {}".format(ln + 1, lines[ln], regs, next_ln + 1)
